@@ -1,0 +1,191 @@
+name: Build and Push Base Images
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Manual tag (e.g. 0.1.0-dev)'
+        required: true
+        default: '0.1.0-dev'
+
+env:
+  REGISTRY: ghcr.io
+  NAMESPACE: helios-plat/helios
+
+jobs:
+  # Layer 1: python-os (no deps on other Helios images)
+  build-python-os:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: meta
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="${{ github.event.inputs.tag }}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          MINOR=$(echo "${VERSION}" | cut -d. -f1-2)
+          echo "minor=${MINOR}" >> $GITHUB_OUTPUT
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push python-os
+        uses: docker/build-push-action@v6
+        with:
+          context: ./images/python-os
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/python-os:${{ steps.meta.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/python-os:${{ steps.meta.outputs.minor }}
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/python-os:latest
+          cache-from: type=gha,scope=python-os
+          cache-to: type=gha,mode=max,scope=python-os
+
+  # Layer 2a: python-api-base (inherits python-os)
+  build-python-api-base:
+    runs-on: ubuntu-latest
+    needs: build-python-os
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push python-api-base
+        uses: docker/build-push-action@v6
+        with:
+          context: ./images/python-api-base
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            BASE_TAG=${{ needs.build-python-os.outputs.version }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/python-api-base:${{ needs.build-python-os.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/python-api-base:latest
+          cache-from: type=gha,scope=python-api-base
+          cache-to: type=gha,mode=max,scope=python-api-base
+
+  # Layer 2b: python-worker-base (inherits python-os)
+  build-python-worker-base:
+    runs-on: ubuntu-latest
+    needs: build-python-os
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push python-worker-base
+        uses: docker/build-push-action@v6
+        with:
+          context: ./images/python-worker-base
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            BASE_TAG=${{ needs.build-python-os.outputs.version }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/python-worker-base:${{ needs.build-python-os.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/python-worker-base:latest
+          cache-from: type=gha,scope=python-worker-base
+          cache-to: type=gha,mode=max,scope=python-worker-base
+
+  # Layer 3: python-ml-base (inherits python-os)
+  build-python-ml-base:
+    runs-on: ubuntu-latest
+    needs: build-python-os
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push python-ml-base
+        uses: docker/build-push-action@v6
+        with:
+          context: ./images/python-ml-base
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            BASE_TAG=${{ needs.build-python-os.outputs.version }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/python-ml-base:${{ needs.build-python-os.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/python-ml-base:latest
+          cache-from: type=gha,scope=python-ml-base
+          cache-to: type=gha,mode=max,scope=python-ml-base
+
+  # Layer 4: python-quant-base (inherits python-ml-base)
+  build-python-quant-base:
+    runs-on: ubuntu-latest
+    needs: [build-python-os, build-python-ml-base]
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push python-quant-base
+        uses: docker/build-push-action@v6
+        with:
+          context: ./images/python-quant-base
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            BASE_TAG=${{ needs.build-python-os.outputs.version }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/python-quant-base:${{ needs.build-python-os.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/python-quant-base:latest
+          cache-from: type=gha,scope=python-quant-base
+          cache-to: type=gha,mode=max,scope=python-quant-base

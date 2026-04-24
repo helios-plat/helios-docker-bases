@@ -1,0 +1,8 @@
+# pandas<3.0 HARD PIN — required by nautilus-trader (see quant-base).
+# DO NOT lift this constraint without verifying nautilus-trader compat.
+numpy==2.4.*
+pandas>=2.3,<3.0
+scikit-learn==1.8.*
+lightgbm==4.6.*
+scipy==1.14.*
+pyarrow==18.1.*

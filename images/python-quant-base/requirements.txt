@@ -1,0 +1,2 @@
+# nautilus-trader requires pandas<3.0 (pinned at ml-base layer).
+nautilus-trader==1.225.*

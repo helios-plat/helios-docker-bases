@@ -1,0 +1,9 @@
+asyncpg==0.31.*
+aio-pika==9.5.*
+redis==5.3.*
+pydantic==2.13.*
+pydantic-settings==2.7.*
+uvloop==0.21.*
+tenacity==9.0.*
+python-json-logger==2.0.*
+orjson==3.10.*

@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Docker local test artifacts
+*.tar
