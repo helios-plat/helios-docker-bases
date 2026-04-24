@@ -53,7 +53,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./images/python-os
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/python-os:${{ steps.meta.outputs.version }}
@@ -84,7 +84,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./images/python-api-base
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           build-args: |
             BASE_TAG=${{ needs.build-python-os.outputs.version }}
@@ -116,7 +116,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./images/python-worker-base
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           build-args: |
             BASE_TAG=${{ needs.build-python-os.outputs.version }}
@@ -148,7 +148,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./images/python-ml-base
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           build-args: |
             BASE_TAG=${{ needs.build-python-os.outputs.version }}
@@ -180,7 +180,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./images/python-quant-base
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           build-args: |
             BASE_TAG=${{ needs.build-python-os.outputs.version }}
