@@ -8,9 +8,16 @@ FROM ghcr.io/helios-plat/helios/python-os:${BASE_TAG}
 
 USER root
 
-# Copy requirements and install with uv (pip-compatible)
+# uvloop 0.21 has no Python 3.14 wheel — build from source, then purge tooling
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --chown=app:app requirements.txt /tmp/requirements.txt
 RUN uv pip install --system --no-cache -r /tmp/requirements.txt && rm /tmp/requirements.txt
+
+RUN apt-get purge -y --auto-remove build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 USER app
 
