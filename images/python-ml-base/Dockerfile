@@ -14,6 +14,7 @@ USER root
 # ML libs need build tooling for a few wheels on arm64; install temporarily then purge
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
+        cmake \
         libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
