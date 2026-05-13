@@ -5,3 +5,8 @@ pandas>=2.3,<3.0
 scikit-learn==1.8.*
 lightgbm==4.6.*
 scipy==1.17.*
+
+# Three-layer stack (oprim/oskill/omodul) — 3O migration
+oprim @ git+https://github.com/helios-plat/oprim.git@v1.2.0
+oskill @ git+https://github.com/helios-plat/oskill.git@v1.2.0
+omodul @ git+https://github.com/helios-plat/omodul.git@v0.2.0
