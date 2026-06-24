@@ -8,7 +8,10 @@ httpx==0.28.*
 python-json-logger==2.0.*
 # orjson removed: PyO3 0.23 (used by orjson 3.10) does not support Python 3.14
 
-# Three-layer stack (oprim/oskill/omodul)
+# 3O stack — every private package must be pinned to its git ref: uv has no
+# private index, so transitive private deps (obase, required by omodul) are not
+# discoverable and must be listed explicitly or resolution fails.
+obase @ git+https://github.com/helios-plat/obase.git@v0.15.12
 oprim @ git+https://github.com/helios-plat/oprim.git@v3.10.29
-oskill @ git+https://github.com/helios-plat/oskill.git@v3.25.14
+oskill @ git+https://github.com/helios-plat/oskill.git@v3.25.16
 omodul @ git+https://github.com/helios-plat/omodul.git@v1.30.10
