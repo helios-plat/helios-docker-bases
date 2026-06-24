@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-# helios-plat/python-api-base:0.2.0
+# helios-plat/python-api-base:0.3.0
 # For FastAPI services: web stack + asyncpg + uvicorn + oprim/oskill/omodul.
 # Inherits: python-os
 
