@@ -88,7 +88,7 @@ jobs:
           push: true
           build-args: |
             BASE_TAG=${{ needs.build-python-os.outputs.version }}
-            GH_TOKEN=${{ secrets.GH_TOKEN }}
+            GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/python-api-base:${{ needs.build-python-os.outputs.version }}
             ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/python-api-base:latest
