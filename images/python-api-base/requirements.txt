@@ -12,6 +12,6 @@ python-json-logger==2.0.*
 # private index, so transitive private deps (obase, required by omodul) are not
 # discoverable and must be listed explicitly or resolution fails.
 obase @ git+https://github.com/helios-plat/obase.git@v0.15.12
-oprim @ git+https://github.com/helios-plat/oprim.git@v3.10.31
+oprim @ git+https://github.com/helios-plat/oprim.git@v3.19.1
 oskill @ git+https://github.com/helios-plat/oskill.git@v4.0.0
 omodul @ git+https://github.com/helios-plat/omodul.git@v1.30.10
